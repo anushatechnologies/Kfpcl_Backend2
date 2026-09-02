@@ -1,0 +1,10 @@
+src/main/resources/*.json
+# src/main/resources/application.properties
+.env
+target/
+*.jar
+/.apt_generated/
+/.apt_generated_tests/
+*.p12
+*.jks
+admin_panel/
