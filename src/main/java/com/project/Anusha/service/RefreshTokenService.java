@@ -5,7 +5,6 @@ import com.project.Anusha.model.User;
 import com.project.Anusha.model.UserMain;
 import com.project.Anusha.repository.RefreshTokenRepository;
 import com.project.Anusha.repository.UserRepository;
-import com.project.Anusha.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +22,15 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
-    private final JwtUtils jwtUtils;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    @Value("${jwt.refresh-expiration-days}")
+    @Value("${jwt.refresh-expiration-days:30}")
     private long refreshTokenDays;
 
     public RefreshTokenService(RefreshTokenRepository refreshTokenRepository,
-                               UserRepository userRepository,
-                               JwtUtils jwtUtils) {
+                               UserRepository userRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
-        this.jwtUtils = jwtUtils;
     }
 
     public TokenPair issueForUserMain(UserMain userMain, RefreshToken.ClientType clientType) {
@@ -104,9 +100,9 @@ public class RefreshTokenService {
         refreshTokenRepository.save(replacement);
 
         return new TokenPair(
-                jwtUtils.generateTokenFromSubject(existing.getSubject()),
+                null,
                 replacement.getToken(),
-                jwtUtils.getExpirationSeconds()
+                86400L
         );
     }
 
@@ -140,9 +136,9 @@ public class RefreshTokenService {
         refreshTokenRepository.save(refreshToken);
 
         return new TokenPair(
-                jwtUtils.generateTokenFromSubject(subject),
+                null,
                 refreshToken.getToken(),
-                jwtUtils.getExpirationSeconds()
+                86400L
         );
     }
 

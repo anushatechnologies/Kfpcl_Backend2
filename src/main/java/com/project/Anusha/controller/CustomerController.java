@@ -10,7 +10,6 @@ import com.project.Anusha.dto.VerifyPhoneRequest;
 import com.project.Anusha.model.Customer;
 import com.project.Anusha.model.RefreshToken;
 import com.project.Anusha.model.UserMain;
-import com.project.Anusha.security.JwtUtils;
 import com.project.Anusha.service.CustomerService;
 import com.project.Anusha.service.FirebaseService;
 import com.project.Anusha.service.RefreshTokenService;
@@ -27,14 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Authentication endpoints for the CustomerApp (Zepto).
- *
- * All endpoints are public (no JWT required) – see SecurityConfig.
- *
- * Flow:
- * New user: POST /api/auth/app/signup { firebaseIdToken, name }
- * Existing user: POST /api/auth/app/login { firebaseIdToken }
- * Pre-check: GET /api/auth/app/check-phone/{phone}
+ * Authentication endpoints for CustomerApp.
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -45,7 +37,6 @@ public class CustomerController {
     private final CustomerService customerService;
     private final UserMainService userMainService;
     private final UserLogService userLogService;
-    private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final WalletService walletService;
     private final ReferralService referralService;
@@ -54,7 +45,6 @@ public class CustomerController {
             CustomerService customerService,
             UserMainService userMainService,
             UserLogService userLogService,
-            JwtUtils jwtUtils,
             RefreshTokenService refreshTokenService,
             WalletService walletService,
             ReferralService referralService) {
@@ -62,7 +52,6 @@ public class CustomerController {
         this.customerService = customerService;
         this.userMainService = userMainService;
         this.userLogService = userLogService;
-        this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
         this.walletService = walletService;
         this.referralService = referralService;

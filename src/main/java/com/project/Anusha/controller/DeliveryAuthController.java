@@ -8,7 +8,6 @@ import com.project.Anusha.dto.TokenRefreshResponse;
 import com.project.Anusha.model.DeliveryPerson;
 import com.project.Anusha.model.RefreshToken;
 import com.project.Anusha.model.UserMain;
-import com.project.Anusha.security.JwtUtils;
 import com.project.Anusha.service.DeliveryPersonService;
 import com.project.Anusha.service.DeliverySignupService;
 import com.project.Anusha.service.DeliveryOnboardingService;
@@ -26,21 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Authentication endpoints for the DeliveryApp (ZeptoPartner).
- *
- * All endpoints under /api/delivery/auth/** are public (no JWT required).
- *
- * Flows:
- *   Pre-check: GET  /api/delivery/auth/check-phone/{phone}
- *   Register:  POST /api/delivery/auth/signup  { firebaseIdToken, firstName, lastName }
- *   Login:     POST /api/delivery/auth/login   { firebaseIdToken }
- *
- * Cross-app scenario:
- *   If a user already registered in CustomerApp with the same phone number,
- *   the Firebase OTP still works. The backend reuses the existing UserMain row
- *   and simply adds the DELIVERY_PERSON role + creates a new delivery_persons row.
- */
 @RestController
 @RequestMapping("/api/delivery/auth")
 @CrossOrigin(origins = "*")
@@ -54,7 +38,6 @@ public class DeliveryAuthController {
     private final FareRuleService fareRuleService;
     private final UserLogService userLogService;
     private final S3Service s3Service;
-    private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
 
     public DeliveryAuthController(FirebaseService firebaseService,
@@ -65,7 +48,6 @@ public class DeliveryAuthController {
                                   FareRuleService fareRuleService,
                                   UserLogService userLogService,
                                   S3Service s3Service,
-                                  JwtUtils jwtUtils,
                                   RefreshTokenService refreshTokenService) {
         this.firebaseService = firebaseService;
         this.deliveryPersonService = deliveryPersonService;
@@ -75,7 +57,6 @@ public class DeliveryAuthController {
         this.fareRuleService = fareRuleService;
         this.userLogService = userLogService;
         this.s3Service = s3Service;
-        this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
     }
 
