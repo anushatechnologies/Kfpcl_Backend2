@@ -1,11 +1,13 @@
 package com.project.Anusha.repository;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.project.Anusha.model.SubCategory;
+import com.project.Anusha.model.Subcategory;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> {
-    List<SubCategory> findByCategoryIdAndIsActiveTrueOrderByDisplayOrderAsc(Long categoryId);
-    List<SubCategory> findByCategoryIdOrderByDisplayOrderAsc(Long categoryId);  
+@Repository
+public interface SubcategoryRepository extends JpaRepository<Subcategory, Long> {
+    List<Subcategory> findByCategoryId(Long categoryId);
+    long countByCategoryId(Long categoryId);
 }

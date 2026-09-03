@@ -1,6 +1,5 @@
 package com.project.Anusha.service;
 
-import com.project.Anusha.model.Customer;
 import com.project.Anusha.model.Product;
 import com.project.Anusha.model.Wishlist;
 import com.project.Anusha.repository.ProductRepository;
@@ -11,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class WishlistService {
 
     @Autowired
@@ -22,43 +21,28 @@ public class WishlistService {
     @Autowired
     private ProductRepository productRepository;
 
-    public void addToWishlist(Customer customer, Long productId) {
+    public List<Product> getWishlistProducts(Long buyerId) {
+        return wishlistRepository.findByBuyerId(buyerId)
+                .stream()
+                .map(Wishlist::getProduct)
+                .collect(Collectors.toList());
+    }
 
-        if (wishlistRepository.existsByCustomerIdAndProductId(customer.getId(), productId)) {
-            return;
+    public Wishlist addToWishlist(Long buyerId, Long productId) {
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if (productOpt.isEmpty()) {
+            throw new IllegalArgumentException("Product not found with id: " + productId);
         }
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-
-        Wishlist wishlist = new Wishlist();
-        wishlist.setCustomer(customer);
-        wishlist.setProduct(product);
-        wishlistRepository.save(wishlist);
-    }
-
-    public void mergeWishlist(Customer customer, List<Long> productIds) {
-        if (productIds == null || productIds.isEmpty()) return;
-        for (Long productId : productIds) {
-            try {
-                addToWishlist(customer, productId);
-            } catch (Exception e) {
-                // skip invalid products
-            }
+        Optional<Wishlist> existing = wishlistRepository.findByBuyerIdAndProductId(buyerId, productId);
+        if (existing.isPresent()) {
+            return existing.get();
         }
+        Wishlist wishlist = new Wishlist(buyerId, productOpt.get());
+        return wishlistRepository.save(wishlist);
     }
 
-    public void removeFromWishlist(Customer customer, Long productId) {
-        Optional<Wishlist> wishlist = wishlistRepository.findByCustomerIdAndProductId(customer.getId(), productId);
-        wishlist.ifPresent(wishlistRepository::delete);
+    @Transactional
+    public void removeFromWishlist(Long buyerId, Long productId) {
+        wishlistRepository.deleteByBuyerIdAndProductId(buyerId, productId);
     }
-
-    public List<Wishlist> getCustomerWishlist(Customer customer) {
-        return wishlistRepository.findByCustomerId(customer.getId());
-    }
-
-    public boolean isWishlisted(Customer customer, Long productId) {
-        return wishlistRepository.existsByCustomerIdAndProductId(customer.getId(), productId);
-    }
-
 }

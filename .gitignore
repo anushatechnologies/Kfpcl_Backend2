@@ -8,3 +8,5 @@ target/
 *.p12
 *.jks
 admin_panel/
+Kfpcl_Backend2/
+.vscode/

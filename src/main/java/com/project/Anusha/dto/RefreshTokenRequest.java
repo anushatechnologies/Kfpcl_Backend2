@@ -1,8 +1,0 @@
-package com.project.Anusha.dto;
-
-import lombok.Data;
-
-@Data
-public class RefreshTokenRequest {
-    private String refreshToken;
-}
